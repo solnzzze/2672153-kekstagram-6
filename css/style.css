@@ -697,6 +697,14 @@ main {
   border-radius: 5px;
 }
 
+.img-upload__error {
+  display: block;
+  min-height: 18px;
+  margin-top: 6px;
+  font-size: 12px;
+  color: #ff4e4e;
+}
+
 
 /**
  * Кнопка для отправки изображения
@@ -1195,7 +1203,7 @@ main {
   top: 0;
   right: 0;
   bottom: 0;
-  z-index: 1;
+  z-index: 10;
 
   background-color: rgba(0, 0, 0, 0.8);
 }
@@ -1390,6 +1398,15 @@ main {
 
   clip: rect(0 0 0 0);
   overflow: hidden;
+}
+
+.img-upload__error,
+.pristine-error {
+  display: block !important;
+  min-height: 18px;
+  margin-top: 6px;
+  font-size: 12px;
+  color: #ff4e4e;
 }
 
 .hidden {

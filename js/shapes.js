@@ -26,7 +26,6 @@ const onBiggerClick = () => {
 };
 
 const initImageScale = () => {
-  // дефолтное значение при открытии формы
   setScale(SCALE_DEFAULT);
 
   buttonSmaller.addEventListener('click', onSmallerClick);
@@ -34,10 +33,9 @@ const initImageScale = () => {
 };
 
 const resetImageScale = () => {
-  // вернуть как было
+
   setScale(SCALE_DEFAULT);
 
-  // убрать обработчики, чтобы не копились при повторных открытиях
   buttonSmaller.removeEventListener('click', onSmallerClick);
   buttonBigger.removeEventListener('click', onBiggerClick);
 };

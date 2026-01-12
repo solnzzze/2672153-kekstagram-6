@@ -57,7 +57,7 @@ const initFilters = (photos, onFilterChange) => {
     onFilterChange(getFilteredPhotos(filterId, photos));
   }, RERENDER_DELAY);
 
-  filtersForm.addEventListener('click', (evt) => {
+  const onFiltersFormClick = (evt) => {
     const button = evt.target.closest('.img-filters__button');
     if (!button) {
       return;
@@ -66,7 +66,9 @@ const initFilters = (photos, onFilterChange) => {
     const filterId = button.id;
     setActiveButton(filterId);
     debouncedRender(filterId);
-  });
+  };
+
+  filtersForm.addEventListener('click', onFiltersFormClick);
 };
 
 export { initFilters };

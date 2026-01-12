@@ -163,16 +163,4 @@ const resetEffects = () => {
   }
 };
 
-const destroyEffects = () => {
-  if (!sliderCreated) {
-    return;
-  }
-
-  effectsContainer.removeEventListener('change', onEffectChange);
-  sliderElement.noUiSlider.off('update', onSliderUpdate);
-  sliderElement.noUiSlider.destroy();
-
-  sliderCreated = false;
-};
-
-export { initEffects, resetEffects, destroyEffects };
+export { initEffects, resetEffects };

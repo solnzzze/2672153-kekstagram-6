@@ -44,13 +44,15 @@ const resetPreview = () => {
   });
 };
 
-fileInput.addEventListener('change', () => {
+const onFileInputChange = () => {
   const file = fileInput.files[0];
   if (!file) {
     return;
   }
 
   setPreview(file);
-});
+};
+
+fileInput.addEventListener('change', onFileInputChange);
 
 export { resetPreview };

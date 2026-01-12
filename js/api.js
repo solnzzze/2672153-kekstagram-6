@@ -1,4 +1,4 @@
-const BASE_URL = 'https://29.javascript.htmlacademy.pro/kekstagram';
+const BASE_URL = 'https://32.javascript.htmlacademy.pro/kekstagram';
 
 const Route = {
   GET_DATA: '/data',
@@ -25,7 +25,11 @@ const sendPicture = async (formData) => {
     throw new Error(`Send error: ${response.status}`);
   }
 
-  return response.json();
+  try {
+    return await response.json();
+  } catch (err) {
+    return null;
+  }
 };
 
 export { loadPictures, sendPicture };

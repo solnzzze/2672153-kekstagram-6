@@ -7,8 +7,6 @@ export const renderPictures = (photos) => {
     .querySelector('.picture');
 
   const container = document.querySelector('.pictures');
-
-  // удаляем старые миниатюры, если они уже были (оставляем только блоки, не являющиеся .picture)
   container.querySelectorAll('.picture').forEach((item) => item.remove());
 
   const fragment = document.createDocumentFragment();
@@ -25,9 +23,11 @@ export const renderPictures = (photos) => {
     node.querySelector('.picture__likes').textContent = likes;
     node.querySelector('.picture__comments').textContent = comments.length;
 
-    node.addEventListener('click', () => {
+    const onPictureClick = () => {
       openBigPicture(photo);
-    });
+    };
+
+    node.addEventListener('click', onPictureClick);
 
     fragment.appendChild(node);
   });

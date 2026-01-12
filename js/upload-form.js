@@ -1,4 +1,4 @@
-import { sendPicture } from './api.js';
+﻿import { sendPicture } from './api.js';
 import { showSuccessMessage, showErrorMessage } from './messages.js';
 import { initImageScale, resetImageScale } from './shapes.js';
 import { initEffects, resetEffects } from './effects.js';
@@ -14,9 +14,11 @@ const fileInput = document.querySelector('#upload-file');
 const submitButton = document.querySelector('#upload-submit');
 
 const hashtagInput = form.querySelector('.text__hashtags');
+const descriptionInput = form.querySelector('.text__description');
 
 const HASHTAG_REGEX = /^#[a-zа-яё0-9]{1,19}$/i;
 const MAX_HASHTAGS = 5;
+const MAX_DESCRIPTION_LENGTH = 140;
 
 const normalizeHashtags = (value) =>
   value
@@ -39,6 +41,8 @@ const validateHashtagUnique = (value) => {
   return new Set(tags).size === tags.length;
 };
 
+const validateDescriptionLength = (value) => value.length <= MAX_DESCRIPTION_LENGTH;
+
 const pristine = new Pristine(form, {
   classTo: 'img-upload__text',
   errorTextParent: 'img-upload__text',
@@ -48,27 +52,26 @@ const pristine = new Pristine(form, {
 pristine.addValidator(
   hashtagInput,
   validateHashtagFormat,
-  'Введён невалидный хэш-тег'
+  'Неверный формат хэш-тега'
 );
 
 pristine.addValidator(
   hashtagInput,
   validateHashtagCount,
-  'Превышено количество хэш-тегов'
+  'Нельзя указывать больше пяти хэш-тегов'
 );
 
 pristine.addValidator(
   hashtagInput,
   validateHashtagUnique,
-  'Хэш-теги повторяются'
+  'Хэш-теги не должны повторяться'
 );
 
-const openForm = () => {
-  overlay.classList.remove('hidden');
-  body.classList.add('modal-open');
-  initImageScale();
-  initEffects();
-};
+pristine.addValidator(
+  descriptionInput,
+  validateDescriptionLength,
+  `Описание не должно превышать ${MAX_DESCRIPTION_LENGTH} символов`
+);
 
 const closeForm = () => {
   overlay.classList.add('hidden');
@@ -93,25 +96,43 @@ const unblockSubmit = () => {
   submitButton.disabled = false;
 };
 
-fileInput.addEventListener('change', () => {
-  openForm();
-});
-
-document.addEventListener('keydown', (evt) => {
+const onDocumentKeydown = (evt) => {
+  if (document.querySelector('.error') || document.querySelector('.success')) {
+    return;
+  }
+  if (document.activeElement === hashtagInput || document.activeElement === descriptionInput) {
+    return;
+  }
   if (evt.key === 'Escape' && !overlay.classList.contains('hidden')) {
     evt.preventDefault();
+    document.removeEventListener('keydown', onDocumentKeydown);
     closeForm();
     resetFormToDefault();
   }
-});
+};
 
-cancelButton.addEventListener('click', (evt) => {
+const openForm = () => {
+  pristine.reset();
+  form.querySelectorAll('.pristine-error').forEach((item) => item.remove());
+  overlay.classList.remove('hidden');
+  body.classList.add('modal-open');
+  initImageScale();
+  initEffects();
+  document.addEventListener('keydown', onDocumentKeydown);
+};
+
+const onFileInputChange = () => {
+  openForm();
+};
+
+const onCancelButtonClick = (evt) => {
   evt.preventDefault();
+  document.removeEventListener('keydown', onDocumentKeydown);
   closeForm();
   resetFormToDefault();
-});
+};
 
-form.addEventListener('submit', async (evt) => {
+const onFormSubmit = async (evt) => {
   evt.preventDefault();
 
   const isValid = pristine.validate();
@@ -121,7 +142,13 @@ form.addEventListener('submit', async (evt) => {
 
   try {
     blockSubmit();
-    await sendPicture(new FormData(form));
+    const formData = new FormData(form);
+    const file = fileInput.files[0];
+    if (file) {
+      formData.set('filename', file);
+    }
+    await sendPicture(formData);
+    document.removeEventListener('keydown', onDocumentKeydown);
     closeForm();
     resetFormToDefault();
     showSuccessMessage();
@@ -130,4 +157,10 @@ form.addEventListener('submit', async (evt) => {
   } finally {
     unblockSubmit();
   }
-});
+};
+
+fileInput.addEventListener('change', onFileInputChange);
+
+cancelButton.addEventListener('click', onCancelButtonClick);
+
+form.addEventListener('submit', onFormSubmit);
